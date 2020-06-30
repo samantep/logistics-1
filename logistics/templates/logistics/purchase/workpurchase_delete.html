@@ -1,0 +1,49 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+{% block title %}
+    {{ object|verbose_name|upper }} / Номер заявки {{ object.bid }}
+{% endblock %}
+{% block main-content %}
+
+    <h3>{{ object|verbose_name|upper }} / #{{ object }}</h3>
+    <div class="uk-margin">
+    <a class="uk-button uk-button-default" href="{% url "work-purchase-list" %}">Назад</a>
+    </div>
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <div>
+            <ul class="uk-list uk-list-divider">
+                <li>Номер заявки {{ object.bid }}</li>
+                <li>SAP номер {{ object.bid.bid.bid_number }}</li>
+                <li>Груз(ы)
+                    {% for cargo in object.bid.bid.cargo.all %}
+                        {{ cargo }} /
+                    {% endfor %}
+                </li>
+                <li>Создана {{ object.bid.bid.pub_date }}</li>
+                <li>Исполнить до {{ object.bid.bid.end_date }}</li>
+                <li>Клиент/поставщик {{ object.bid.bid.client }}</li>
+                <li>Статус
+                    {% if object.bid.status %}
+                        Принята
+                    {% else %}
+                        Не принята
+                    {% endif %}
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ object.bid.bid_id }}">
+                <h3>Удалть заявку {{ object.bid.bid_id }}?</h3>
+                <input type="submit" class="uk-button-danger uk-button" value="Удалить">
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

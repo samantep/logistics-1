@@ -1,0 +1,209 @@
+<nav class="uk-navbar-container uk-margin-medium-bottom" uk-navbar uk-sticky>
+    <div class="uk-navbar-left">
+
+        <ul class="uk-navbar-nav">
+            <li class="uk-active uk-margin-left">
+                <a href="#" uk-toggle="target: #offcanvas-nav">
+                    <span uk-navbar-toggle-icon></span>
+                    <span class="uk-margin-small-left">Меню</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'home' %}">Главная</a>
+            </li>
+        </ul>
+
+    </div>
+
+    <div class="uk-navbar-right">
+
+        {#        <div class="">#}
+        {#            <form class="uk-search uk-search-default" method="get">#}
+        {##}
+        {#                <input class="uk-search-input" type="search" name="order_number" placeholder="Найти заявку...">#}
+        {#                <input type="submit" value="Найти заявку...">#}
+        {#            </form>#}
+        {#        </div>#}
+
+        <ul class="uk-navbar-nav uk-margin-right">
+            <li><a href="">{{ request.user.first_name }} {{ request.user.last_name }}</a></li>
+            <li class="uk-active "><a href="{% url "logout" %}" uk-icon="icon: reply"></a></li>
+        </ul>
+
+    </div>
+</nav>
+
+<div id="offcanvas-nav" uk-offcanvas="mode: push; overlay: true">
+    <div class="uk-offcanvas-bar">
+        <ul class="uk-nav-default uk-nav-parent-icon" uk-nav>
+            <li class="uk-parent uk-active">
+                <a href="#">
+                    <span class="uk-margin-small-right" uk-icon="icon: yelp"></span>
+                    Статистика
+                </a>
+                <ul class="uk-nav-sub">
+                    {% if perms.purchase.add_bidpurchase or perms.logistics.add_cityclickpurchase %}
+                        <li><a href="{% url "all_data_purshase" %}">Закуп</a></li>
+                    {% endif %}
+                    {% if perms.sale.add_bidsale or perms.logistics.add_cityclickpurchase %}
+                        <li><a href="{% url "all_data_sale" %}">Сбыт</a></li>
+                    {% endif %}
+                </ul>
+            </li>
+            <li class="uk-nav-divider"></li>
+            <li class="uk-parent">
+                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: cart"></span> Заявки отдел закупа</a>
+                <ul class="uk-nav-sub">
+                    <li>
+                        <a href="{% url "purchase-bid-list" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: list">
+                            </span>
+                            Заявки отдела
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url "purchase-bid-create" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: plus">
+                            </span>
+                            Подать заявку
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url "status-purchase-list" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: play"></span>
+                            Статусы заявок
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="uk-nav-divider"></li>
+            <li class="uk-parent">
+                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: tag"></span> Заявки отдел сбыта</a>
+                <ul class="uk-nav-sub">
+                    <li>
+                        <a href="{% url "sale-bid-list" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: list">
+                            </span>
+                            Заявки отдела
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url "sale-bid-create" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: plus">
+                            </span>
+                            Подать заявку
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url "status-sale-list" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: play"></span>
+                            Статусы заявок
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="uk-nav-divider"></li>
+            <li class="uk-parent">
+                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: database"></span> Справочник</a>
+                <ul class="uk-nav-sub">
+                    <li><a href="{% url "cargo" %}"> Материалы</a></li>
+                    <li><a href="{% url "client_list" %}"> Клиенты</a></li>
+                    <li><a href="{% url "provider" %}"> Поставщики</a></li>
+                    <li><a href="{% url "trade-term" %}"> Товарные термины</a></li>
+                    <li><a href="{% url "city" %}"> Города</a></li>
+                    <li><a href="{% url "in-path" %}"> Коды входящих маршрутов</a></li>
+                    <li><a href="{% url "out-path" %}"> Коды исходящих маршрутов</a></li>
+                    <li><a href="{% url "currency" %}"> Валюта</a></li>
+                    <li><a href="{% url "transport" %}"> Транспорт</a></li>
+                    <li><a href="{% url "logistics-provider" %}"> Поставщик услуг для лог.</a></li>
+                    <li><a href="{% url "path" %}"> Вид маршрута</a></li>
+                    <!--<li><a href="{% url "status" %}"> Вид маршрута</a></li>-->
+                </ul>
+            </li>
+            <li class="uk-nav-divider"></li>
+            <li class="uk-parent">
+                <a href="#"><span class="uk-margin-small-right" uk-icon="icon: code"></span> Отдел логистики</a>
+                <ul class="uk-nav-sub">
+                    <li>
+                        <a href="{% url "status-purchase-list" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: list"></span>
+                            Обработка заявок отдела закупа
+                        </a>
+
+                    </li>
+                    <li>
+                        <a href="{% url "status-sale-list" %}">
+                            <span class="uk-margin-small-right" uk-icon="icon: list"></span>
+                            Обработка заявок отдела сбыта
+                        </a>
+                    </li>
+                    <li class="uk-nav-divider"></li>
+                    <li class="uk-nav-divider"></li>
+                    <li class="uk-parent">
+                        <a class="uk-text-uppercase" href="#">
+                            <span class="uk-margin-small-right" uk-icon="icon: shrink"></span>
+                            Работа с входящими заявками
+                        </a>
+                        <ul class="uk-nav-sub">
+                            <li class="uk-nav-divider"></li>
+                            <li><a class="uk-text-danger" href="{% url "work-purchase-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: shrink"></span>
+                                Заявки в обработке
+                            </a>
+                            </li>
+                            <li><a class="uk-text-warning" href="{% url "upload-purchase-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: shrink"></span>
+                                На загрузке
+                            </a>
+                            </li>
+                            <li><a class="uk-text-success" href="{% url "path-purchase-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: shrink"></span>
+                                Погружено
+                            </a>
+                            </li>
+                            <li><a class="uk-text-primary" href="{% url "click-purchase-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: shrink"></span>
+                                Отметка в пути
+                            </a>
+                            </li>
+                        </ul>
+                    <li class="uk-nav-divider"></li>
+                    </li>
+                    <li class="uk-nav-divider"></li>
+                    <li class="uk-parent">
+                        <a class="uk-text-uppercase" href="#">
+                            <span class="uk-margin-small-right" uk-icon="icon: expand"></span>
+                            Работа с исходящими заявками
+                        </a>
+                        <ul class="uk-nav-sub">
+                            <li class="uk-nav-divider"></li>
+                            <li><a class="uk-text-danger" href="{% url "work-sale-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: expand"></span>
+                                Заявки в обработке
+                            </a>
+                            </li>
+                            <li><a class="uk-text-warning" href="{% url "upload-sale-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: expand"></span>
+                                На загрузке
+                            </a>
+                            </li>
+                            <li><a class="uk-text-success" href="{% url "path-sale-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: expand"></span>
+                                Погружено
+                            </a>
+                            </li>
+                            <li><a class="uk-text-primary" href="{% url "click-sale-list" %}">
+                                <span class="uk-margin-small-right" uk-icon="icon: expand"></span>
+                                Отметка в пути
+                            </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </li>
+
+        </ul>
+
+    </div>
+</div>

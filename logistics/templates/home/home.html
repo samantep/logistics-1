@@ -1,0 +1,38 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% block title %}
+Система учёта логистических затрат
+{% endblock %}
+
+{% block main-content %}
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <div>
+            <h2>Приложение для оформления заявок</h2>
+
+            <p class="uk-text-italic">Процесс обработки заявок</p>
+
+            <ul class="uk-subnav uk-subnav-pill" uk-switcher="animation: uk-animation-fade">
+                <li><a href="#">Шаг 1</a></li>
+                <li><a href="#">Шаг 2</a></li>
+                <li><a href="#">Шаг 3</a></li>
+                <li><a href="#">Шаг 4</a></li>
+                <li><a href="#">Шаг 5</a></li>
+            </ul>
+
+            <ul class="uk-switcher uk-margin">
+                <li>Заполните заявку (отдел закупа или сбыта) <br>соблюдая инструкцию</li>
+                <li>Проверяет и принемает заявку <br>отдел логистики</li>
+                <li>Если заявка принята, вы увидете изменение статуса <br>в соответствующем меню</li>
+                <li>Оператор из отдела логистики <br>находит транспорт или поставщика и изменяет статус заявки на <span class="uk-text-bold">"обработана"</span></li>
+                <li>Теперь по заявке будет создан теркер <br>по нему можно будет отследить местонахождение груза</li>
+            </ul>
+            <span class="uk-text-lead">
+                «Всегда выбирайте самый трудный путь - на нем вы не встретите конкурентов»
+            </span>
+            <span class="uk-article-meta">Шарль де Голль</span>
+        </div>
+        <div>
+            <img src="{% get_media_prefix %}logo/41549950570.jpg" alt="photo">
+        </div>
+    </div>
+{% endblock %}

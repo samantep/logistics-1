@@ -1,0 +1,67 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load my_tags %}
+{% block title %}
+Страница сортировки городов по маршруту {{ obj }}
+{% endblock %}
+
+{% block ajax %}
+
+{% endblock %}
+
+{% block main-content %}
+
+    <a href="{{ url }}" class="uk-button uk-button-default uk-margin-small-right" >
+        Назад
+    </a>
+    {% if info %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <h3>Ошибка</h3>
+            <p>Не добвлено в базую. Возможно эта запись уже есть - {{ obj|upper }}.</p>
+        </div>
+    {% endif %}
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped">
+            <thead>
+            <tr>
+                <th>Код маршрута</th>
+                <th>Города</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ obj }}</td>
+                <td>{% for city in obj.city.all %}
+                    {{ city }}
+                {% endfor %}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="uk-overflow-auto">
+            <table class="uk-table uk-table-divider uk-table-striped">
+                <thead>
+                <tr>
+                    <th>Город</th>
+                    <th>порядок</th>
+                    <th>Транспорт</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for city in city_list %}
+                    <tr>
+
+                        <td>{{ city.city }}</td>
+                        <td>{{ city.sort }}</td>
+                        <td>{{ city.transport }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endblock %}

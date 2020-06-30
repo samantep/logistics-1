@@ -1,0 +1,47 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+{% block title %}
+    {{ object|verbose_name|upper }} / Номер заявки {{ object.id }}
+{% endblock %}
+{% block main-content %}
+
+    <h3>{{ object|verbose_name|upper }} / #{{ object }}</h3>
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <div>
+            <ul class="uk-list uk-list-divider">
+                <li>Номер заявки {{ object.id }}</li>
+                <li>SAP номер {{ object.bid_number }}</li>
+                <li>Груз(ы)
+                    {% for cargo in object.cargo.all %}
+                        {{ cargo }}
+                    {% endfor %}
+                </li>
+                <li>Создана {{ object.pub_date }}</li>
+                <li>Исполнить до {{ object.end_date }}</li>
+                <li>Клиент/поставщик {{ object.client }}</li>
+                <li>Статус
+                    {% if object.status %}
+                        Принята
+                    {% else %}
+                        Не принята
+                    {% endif %}
+                </li>
+
+            </ul>
+            <a class="uk-button uk-button-primary" href="{% url "sale-bid-update" object.id %}">
+                Изменить
+            </a>
+
+            <a class="uk-button uk-button-danger" href="{% url "sale-bid-delete" object.id %}">
+                Удалить
+            </a>
+        </div>
+
+
+        <div>
+
+
+        </div>
+    </div>
+{% endblock %}

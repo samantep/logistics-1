@@ -1,0 +1,68 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+{% block title %}
+Создание заявки
+{% endblock %}
+{% block main-content %}
+    <h3>Создание заявки</h3>
+    <div class="uk-margin">
+    <a class="uk-button uk-button-default" href="{% url "work-sale-list" %}">Назад</a>
+    </div>
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <form method="post" class="uk-form-stacked" enctype="multipart/form-data">
+            <fieldset class="uk-fieldset">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="uk-margin">
+                            <label class="uk-form-label">
+                                {{ field.label }}
+                            </label>
+                            <div class="uk-form-controls">
+
+                                {% if field.errors %}
+                                    <div class="uk-alert-danger">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
+                <div class="uk-margin">
+                    <input class="uk-button uk-button-default" value="Отправить" type="submit">
+                </div>
+            </fieldset>
+            <script>
+                flatpickr("#id_shipping_date", {
+                    altInput: true,
+                    altFormat: "F j, Y",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    "locale": "ru",
+                });
+            </script>
+        </form>
+
+
+        <div>
+            <h3>Форма заполнения заявки</h3>
+            <ul class="uk-list uk-list-divider">
+                <li>Укажите номер исходящего маршрута</li>
+                <li>Укажите цену услуги</li>
+                <li>Укажите валюту</li>
+                <li>Укажите транспорт</li>
+                <li>Укажите торговые термины</li>
+                <li>Укажите дни поставки</li>
+                <li>Укажите дату начала погрузки</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

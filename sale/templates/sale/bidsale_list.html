@@ -1,0 +1,100 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            {{ object|verbose_name_plural|upper }}
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+{% endblock %}
+
+{% block main-content %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            <h3>{{ object|verbose_name_plural|upper }}</h3>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+    <button class="uk-button uk-button-default uk-margin" id="excel">Скачать</button>
+    <script src="{% static "/js/jquery2.min.js" %}"></script>
+    <script src="{% static "/js/jquery.table2excel.min.js" %}"></script>
+    <script type="text/javascript">
+        $('#excel').click(function () {
+            $(document).ready(function () {
+                $("#exTable").table2excel({
+                    filename: "Employees.xls"
+                });
+            });
+
+        });
+    </script>
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover" id="exTable">
+            <thead>
+            <tr>
+                <th class="uk-width-small">№ заявки</th>
+                <th>№ SAP</th>
+                <th>Клиент/Поставщик</th>
+                <th>Материал</th>
+                <th>Примечание</th>
+                <th>Дата открытия</th>
+                <th>Когда нужен транспорт</th>
+                <th>Статус</th>
+                <th>Файл</th>
+                <th>Заявитель</th>
+                <th>Изменить</th>
+                <th>Удалить</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bid in object_list %}
+                <tr>
+                    <td>{{ bid.id }}</td>
+                    <td>{{ bid.bid_number }}</td>
+                    <td>{{ bid.client }}</td>
+                    <td>
+                        {% for cargo in bid.cargo.all %}
+                            {{ cargo }}
+                        {% endfor %}
+                    </td>
+                    <td>{{ bid.comment }}</td>
+                    <td>{{ bid.pub_date }}</td>
+                    <td>{{ bid.end_date }}</td>
+                    <td>
+                        {% if bid.status %}
+                            <span class="uk-text-success">принята</span>
+                        {% else %}
+                            <span class="uk-text-danger">не принята</span>
+                        {% endif %}
+                    </td>
+                    <td class="uk-table-link">
+                        <a href="{% get_media_prefix %}{{ bid.file }}" alt="файл" target="_blank">
+                            {{ bid.file }}
+                        </a>
+                    </td>
+                    <td>{{ bid.created_by.first_name }} {{ bid.created_by.last_name }}</td>
+                    <td>
+                        <a class="uk-button uk-button-primary" href="{% url "sale-bid-update" bid.id %}">
+                            Изменить
+                        </a>
+                    </td>
+                    <td>
+                        <a class="uk-button uk-button-danger" href="{% url "sale-bid-delete" bid.id %}">
+                            Удалить
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                Нет данных
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "base/pagination.html" with page=page_obj %}
+
+{% endblock %}

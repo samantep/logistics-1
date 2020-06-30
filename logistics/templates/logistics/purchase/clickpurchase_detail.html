@@ -1,0 +1,98 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    {{ object|verbose_name|upper }}
+{% endblock %}
+
+{% block main-content %}
+
+    <h2>{{ object|verbose_name|upper }}</h2>
+    {% if object.click_count == object.city_count %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <p>Заявка закрыта</p>
+        </div>
+    {% endif %}
+    <div class="uk-margin">
+        <a class="uk-button uk-button-default" href="{% url "click-purchase-list" %}">Назад</a>
+    </div>
+    <div class="uk-text-small uk-grid-small uk-child-width-1-6" uk-grid style="margin-left: 0px;">
+        {% for item in auto %}
+
+            <div id="s{{ item.sort }}" class="gray uk-card-hover ">
+
+                    {{ item.city }}
+
+
+                    {% if item.transport.id == 1 %}
+                        <img src="{% get_media_prefix %}auto.png" width="50%" height="50%" uk-responsive
+                             alt="{{ item.transport }}">
+                    {% elif item.transport.id == 2 %}
+                        <img src="{% get_media_prefix %}trayn.png" width="50%" height="50%" alt="{{ item.transport }}"
+                             uk-responsive>
+                    {% elif item.transport.id == 3 %}
+                        <img src="{% get_media_prefix %}plan.png" width="50%" height="50%" alt="{{ item.transport }}"
+                             uk-responsive>
+                    {% elif item.transport.id == 4 %}
+                        <img src="{% get_media_prefix %}sheep.png" width="50%" height="50%" uk-responsive
+                             alt="{{ item.transport }}">
+                    {% else %}
+                        {{ item.transport }}
+                    {% endif %}
+
+
+            </div>
+
+        {% endfor %}
+    </div>
+    <div class="uk-margin">
+        <progress class="uk-progress" value="{{ object.click_count }}" max="{{ object.city_count }}"></progress>
+    </div>
+    <script>
+
+        window.onload = function () {
+            $.get("{% url "ajax_purchase" object.pk %}", function (data) {
+                console.log(data);
+                let idx = 1;
+                while (idx <= data['id']) {
+                    $('#s' + idx).removeClass('gray').toggleClass(data['class_css']);
+                    idx += 1;
+                };
+            });
+        };
+
+    </script>
+
+{% endblock %}
+
+{% block ajax %}
+    {% for item in auto %}
+        $( document ).ready(function(){
+
+        $("#s{{ item.sort }}").click(function() {
+        $.ajax({
+        url: '{% url "ajax_click_purchase" object.pk %}',
+        data: {
+        'id': {{ item.sort }}
+        },
+        method: 'GET',
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+        console.log(data['class_css']),
+        alert("Изменено"),
+        $('.uk-progress').val(data['click']),
+        $('#s{{ item.sort }}').removeClass('gray').toggleClass(data['class_css'])
+        },
+
+        error: function (data) {
+        if (data.yes) { alert("Ошибка!");}
+        }
+        });
+        });
+        });
+
+    {% endfor %}
+{% endblock %}

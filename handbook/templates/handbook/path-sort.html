@@ -1,0 +1,184 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load my_tags %}
+{% block title %}
+Страница сортировки городов по маршруту {{ obj }}
+{% endblock %}
+
+
+{% block main-content %}
+
+    <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #modal2">
+        Добавить сортировку
+    </button>
+    {% if info %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <h3>Ошибка</h3>
+            <p>Не добвлено в базую. Возможно эта запись уже есть - {{ obj|upper }}.</p>
+        </div>
+    {% endif %}
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped">
+            <thead>
+            <tr>
+                <th>Код маршрута</th>
+                <th>Города</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ obj }}</td>
+                <td>{% for city in obj.city.all %}
+                    {{ city }}
+                {% endfor %}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="uk-overflow-auto">
+            <table class="uk-table uk-table-divider uk-table-striped">
+                <thead>
+                <tr>
+                    <th>Город</th>
+                    <th>порядок</th>
+                    <th>Изменить порядок</th>
+                    <th>Транспорт</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for city in city_list %}
+                    <tr>
+
+                        <td>{{ city.city }}</td>
+                        <td>
+                            {{ city.sort }}
+                        </td>
+                        <td>
+                            <form action="" method="get">
+                                <input type="hidden" name="path_code" value="{{ city.path_code_id }}">
+                                <input type="hidden" name="city" value="{{ city.city_id }}">
+                                <select id="sort{{ city.city_id }}{{ city.path_code_id }}" class="uk-select uk-width-1-5" name="sort" value="{{ city.sort }}">
+                                    {% for max in max_city %}
+                                        <option value="{{ max }}">{{ max }}</option>
+                                    {% endfor %}
+                                    
+                                </select>
+                            <select id="transport{{ city.city_id }}{{ city.path_code_id }}" class="uk-select uk-width-1-5" name="transport" value="{{ city.transport }}">
+                                    {% for t in transport %}
+                                        <option value="{{ t.id }}">{{ t }}</option>
+                                    {% endfor %}
+
+                                </select>
+                            </form>
+                        </td>
+                        <td>{{ city.transport }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block modal %}
+    <div id="modal2" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h3 class="uk-modal-title">Добавление сортировки</h3>
+            <form method="post">
+                {% csrf_token %}
+                <fieldset class="uk-fieldset">
+
+                    <input type="hidden" name="path_code" value="{{ obj.pk }}">
+                    <div class="uk-margin">
+                        <label class="uk-form-label">
+                            Города
+                        </label>
+                        <div class="uk-margin">
+                            <select name="city" id="id_city" class="uk-select">
+                                {% for city in obj.city.all %}
+                                    <option value="{{ city.id }}">{{ city }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="uk-margin">
+                        <label class="uk-form-label">
+                            Ключ сортировки
+                        </label>
+                        <div class="uk-margin">
+                            <input type="text" class="uk-input" name="sort">
+                        </div>
+                    </div>
+                    <div class="uk-margin">
+                        <label class="uk-form-label">
+                            Транспорт
+                        </label>
+                        <div class="uk-margin">
+                            <select type="text" class="uk-select" name="transport">
+                                {% for item in transport %}
+                                    <option value="{{ item.id }}">{{ item }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="uk-text-right">
+                        <button class="uk-button uk-button-default uk-modal-close" type="button">Отмена</button>
+                        <button type="submit" class="uk-button uk-button-primary">Сохранить</button>
+                    </p>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block ajax %}
+   {% for city in city_list %}
+
+       $("#sort{{ city.city_id }}{{ city.path_code_id }}").change(function () {
+       var sort = $(this).val();
+            var id = {{ city.id }};
+            var sort = $(this).val();
+            var name = '{{ name }}';
+            $.ajax({
+               url: '/handbook/edit/',
+               data: {
+                        'id': id,
+                        'sort': sort,
+                        'name': name,
+                    },
+               dataType: 'json',
+               success: function (data) {
+                    if (data.yes) { alert("Обновите страницу! Порядок для {{ city.city }} изменён");}
+                        }
+               });
+
+        });
+       $("#transport{{ city.city_id }}{{ city.path_code_id }}").change(function () {
+            var id = {{ city.id }};
+            var transport = $(this).val();
+            var name = '{{ name }}';
+            console.log( 'id=' + id + '\n' + 'transport=' + transport );
+                $.ajax({
+                   url: '/handbook/edit/',
+                   data: {
+                            'id': id,
+                            'transport': transport,
+                            'name': name,
+                        },
+                   dataType: 'json',
+                   success: function (data) {
+                        if (data.yes) { alert("Обновите страницу! Транспорт для {{ city.city }} изменён");}
+                            }
+                });
+
+        });
+    {% endfor %}
+{% endblock %}

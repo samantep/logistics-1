@@ -1,0 +1,226 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    Итоговая таблица {% if mark %}
+    входящих заявок
+{% else %}
+    исходящих заявок
+{% endif %}
+{% endblock %}
+
+{% block main-content %}
+    <h3>Итоговая таблица {% if mark %}
+        входящих заявок
+    {% else %}
+        исходящих заявок
+    {% endif %} </h3>
+
+    <button class="uk-button uk-button-default uk-margin" id="excel">Скачать</button>
+    <script src="{% static "/js/jquery2.min.js" %}"></script>
+    <script src="{% static "/js/jquery.table2excel.min.js" %}"></script>
+    <script type="text/javascript">
+        $('#excel').click(function () {
+            $(document).ready(function () {
+                $("#exTable").table2excel({
+                    filename: "Employees.xls"
+                });
+            });
+
+        });
+    </script>
+    <form action="" method="GET">
+        <div class="uk-fieldset" uk-grid>
+            {% csrf_token %}
+            {% for field in form_pub %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <div class="uk-margin">
+                        <label class="uk-form-label">
+                            {{ field.label }}
+                        </label>
+                        <div class="uk-form-controls">
+
+                            {% if field.errors %}
+                                <div class="uk-alert-danger">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+        <div class="uk-margin">
+            <input class="uk-button uk-button-default" value="Отправить" type="submit">
+        </div>
+        <script>
+            flatpickr("#id_min_pub_date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                "locale": "ru",
+            });
+            flatpickr("#id_max_pub_date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                "locale": "ru",
+            });
+        </script>
+    </form>
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover" id="exTable">
+            <thead>
+            <tr>
+                <th class="uk-table-link">№ заявки</th>
+                <th>Вид</th>
+                <th>Материал</th>
+                <th>№ заказа</th>
+                <th>Торговые термины</th>
+                <th>название маршрута</th>
+                <th>Клиент/поставщик</th>
+                <th>Статус</th>
+                <th>Дата подачи заявки</th>
+                <th>Дата принятия заявки в обработку</th>
+                <th>дата начала пути</th>
+                <th>дата окончания пути</th>
+                {% if perms.logistics.add_cityclickpurchase %}
+                    <th>Гос номер авто</th>
+                    <th>Поставщик услуг</th>
+                    <th>Цена услуги+доп дебеты</th>
+                    <th>Итоговый комментарий</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for bid in object_list %}
+                {% if bid.status == 4 %}
+                    <tr style="background-color: greenyellow">
+                        <td><a href="{% url 'work-purchase-update' bid.statuspurchase.pk %}">{{ bid.bid_id }}</a>
+                        </td>
+                        <td>
+                            {{ bid.statuspurchase.path }}
+                        </td>
+                        <td>
+                            {% for cargo in bid.bid.cargo.all %}
+                                {{ cargo }}
+                            {% endfor %}
+                        </td>
+
+                        <td>{{ bid.bid.bid_number }}</td>
+                        <td>
+                            {% for trade_term in bid.statuspurchase.trade_term.all %}
+                                {{ trade_term }}
+                            {% endfor %}
+                        </td>
+                        <td>{{ bid.statuspurchase.way.description }}</td>
+                        <td>{{ bid.bid.client }}</td>
+                        <td>
+                            {% if bid.status == 1 %}
+                                <span class="uk-text-warning">принята</span>
+                            {% elif bid.status == 2 %}
+                                <span class="uk-text-success">на загрузке</span>
+                            {% elif bid.status == 3 %}
+                                <span class="uk-text-primary">в пути</span>
+                            {% elif bid.status == 4 %}
+                                <span>закрыта</span>
+                            {% else %}
+                                <span class="uk-text-danger">не принята</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ bid.bid.pub_date }}</td>
+
+
+                        <td>{{ bid.statuspurchase.pub_date }}</td>
+                        <td>{{ bid.statuspurchase.cityonpathpurchase.pub_date }}</td>
+                        <td>
+                            {% if bid.status == 4 %}
+                                {{ bid.statuspurchase.cityonpathpurchase.update_date }}
+                            {% endif %}
+                        </td>
+                        {% if perms.logistics.add_cityclickpurchase %}
+                            <td>{{ bid.statuspurchase.num }}
+                            </td>
+                            <td>
+                                {{ bid.statuspurchase.provider }}
+                            </td>
+                            <td>{{ bid.statuspurchase.price }}/{{ bid.statuspurchase.delta_price }} {{ bid.statuspurchase.currency }}</td>
+                            <td>{{ bid.statuspurchase.comment }}</td>
+                        {% endif %}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>
+                            {% if bid.status %}
+                                <a href="{% url 'work-purchase-update' bid.statuspurchase.pk %}">{{ bid.bid_id }}</a>
+                                {% else %}
+                                {{ bid.bid_id }}
+                            {% endif %}
+
+                        </td>
+                        <td>
+                            {{ bid.statuspurchase.path }}
+                        </td>
+                        <td>
+                            {% for cargo in bid.bid.cargo.all %}
+                                {{ cargo }}
+                            {% endfor %}
+                        </td>
+
+                        <td>{{ bid.bid.bid_number }}</td>
+                        <td>
+                            {% for trade_term in bid.statuspurchase.trade_term.all %}
+                                {{ trade_term }}
+                            {% endfor %}
+                        </td>
+                        <td>{{ bid.statuspurchase.way.description }}</td>
+                        <td>{{ bid.bid.client }}</td>
+                        <td>
+                            {% if bid.status == 1 %}
+                                <span class="uk-text-success">принята</span>
+                            {% elif bid.status == 2 %}
+                                <span class="uk-text-success">на загрузке</span>
+                            {% elif bid.status == 3 %}
+                                <span class="uk-text-success">в пути</span>
+                            {% elif bid.status == 4 %}
+                                <span>закрыта</span>
+                            {% else %}
+                                <span class="uk-text-danger">не принята</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ bid.bid.pub_date }}</td>
+
+
+                        <td>{{ bid.statuspurchase.pub_date }}</td>
+                        <td>{{ bid.statuspurchase.cityonpathpurchase.pub_date }}</td>
+                        <td>
+                            {% if bid.status == 4 %}
+                                {{ bid.statuspurchase.cityonpathpurchase.update_date }}
+                            {% endif %}
+                        </td>
+                        {% if perms.logistics.add_cityclickpurchase %}
+                            <td>{{ bid.statuspurchase.num }}
+                            </td>
+                            <td>
+                                {{ bid.statuspurchase.provider }}
+                            </td>
+                            <td>{{ bid.statuspurchase.price }}/{{ bid.statuspurchase.delta_price }} {{ bid.statuspurchase.currency }}</td>
+                            <td>{{ bid.statuspurchase.comment }}</td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
+            {% empty %}
+                Нет данных
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "base/pagination.html" with page=object_list %}
+
+{% endblock %}

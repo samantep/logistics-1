@@ -1,0 +1,40 @@
+{% extends 'login/login.html' %}
+{% load static %}
+
+{% block main-content %}
+    <div class="uk-background-cover uk-panel uk-flex uk-flex-center uk-flex-middle"
+         style="background-image: url(/media/logo/15.jpg);" uk-height-viewport>
+        <div class="uk-flex uk-flex-center">
+            <div class="uk-card uk-card-default uk-card-body uk-width-1-2@m" style="opacity: 0.8!important;">
+                <img src="/media/logo/sap.jpg" alt="sap" width="20%">
+                <img src="/media/logo/logo.jpg" alt="sag" width="20%">
+                {% if status %}
+                    <div class="uk-alert-danger" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <h3>{{ info }}</h3>
+                        <a href="{% url 'login' %}" class="uk-button-default uk-button">Авторизоваться</a>
+                    </div>
+                {% endif %}
+                <form method="post" >
+                    {% csrf_token %}
+                    <fieldset class="uk-fieldset">
+
+                        <legend class="uk-legend" style="color: #080808">Приём и обработка заявок</legend>
+
+                        <div class="uk-margin">
+                            <input class="uk-input" name="username" style="color: #080808" type="text" placeholder="Логин">
+                        </div>
+                        <div class="uk-margin">
+                            <input class="uk-input" name="password" style="color: #080808" type="password" placeholder="Пароль">
+                        </div>
+
+                        <div class="uk-margin">
+                            <input class="uk-button uk-button-default" style="color: #080808" type="submit" value="Отправить">
+                        </div>
+
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

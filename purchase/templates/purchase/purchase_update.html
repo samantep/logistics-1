@@ -1,0 +1,65 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+{% block title %}
+{{ object|verbose_name|upper }} / Номер заявки {{ object.id }}
+{% endblock %}
+{% block main-content %}
+
+    <h3>СОЗДАНИЕ {{ object|verbose_name_plural|upper }}</h3>
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <form method="post" class="uk-form-stacked" enctype="multipart/form-data">
+            <fieldset class="uk-fieldset">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="uk-margin">
+                            <label class="uk-form-label">
+                                {{ field.label }}
+                            </label>
+                            <div class="uk-form-controls">
+
+                                {% if field.errors %}
+                                    <div class="uk-alert-danger">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+
+                <div class="uk-margin">
+                    <input class="uk-button uk-button-default" value="Отправить" type="submit">
+                </div>
+            </fieldset>
+            <script>
+                flatpickr("#id_end_date", {
+                    enableTime: true,
+                    altFormat: "F j, Y",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    "locale": "ru",
+                });
+            </script>
+        </form>
+
+
+        <div>
+            <h3>Форма заполнения заявки</h3>
+            <ul class="uk-list uk-list-divider">
+                <li>Укажите номер заявки из SAP или рег. номер</li>
+                <li>Укажите груз/грузы</li>
+                <li>Укажите крайний срок</li>
+                <li>Укажите клиента/поставщика</li>
+                <li>Примечание и файл необязательные поля</li>
+                <li>Файл неболее 2,5МБ</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

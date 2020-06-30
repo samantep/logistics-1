@@ -1,0 +1,101 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            {{ object|verbose_name_plural|upper }}
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+{% endblock %}
+
+{% block main-content %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            <h3>{{ object|verbose_name_plural|upper }}</h3>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+    <button class="uk-button uk-button-default uk-margin" id="excel">Скачать</button>
+    <script src="{% static "/js/jquery2.min.js" %}"></script>
+    <script src="{% static "/js/jquery.table2excel.min.js" %}"></script>
+    <script type="text/javascript">
+        $('#excel').click(function () {
+            $(document).ready(function () {
+                $("#exTable").table2excel({
+                    filename: "Employees.xls"
+                });
+            });
+
+        });
+    </script>
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover" id="exTable">
+            <thead>
+            <tr>
+                <th>№ заявки</th>
+                <th>Статус</th>
+                <th>Клиент/Поставщик</th>
+                <th>Материал</th>
+                <th>Дата открытия</th>
+                <th>Когда нужен транспорт</th>
+                <th>код маршрута</th>
+                <th>номер машины</th>
+                <th>Торговые термины</th>
+                <th>Дни доставки</th>
+                <th>дата погрузки</th>
+                <th>Дата принятия</th>
+                <th>Обновить</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bid in object_list %}
+                <tr>
+                    <td>{{ bid.bid.bid.bid_id }}</td>
+                    <td>
+                        {% if bid.status %}
+                            <span class="uk-text-success">на загрузке</span>
+                        {% else %}
+                            <span class="uk-text-danger">загрузка не начата</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ bid.bid.bid.bid.client }}</td>
+                    <td>
+                        {% for cargo in bid.bid.bid.bid.cargo.all %}
+                            {{ cargo }}
+                        {% endfor %}
+                    </td>
+                    <td>{{ bid.bid.bid.bid.pub_date }}</td>
+                    <td>{{ bid.bid.bid.bid.end_date }}</td>
+                    <td>{{ bid.bid.way }}</td>
+                    <td>{{ bid.bid.num }}</td>
+                    <td>{% for trade_term in bid.bid.trade_term.all %}
+                        {{ trade_term }}
+                    {% endfor %}
+                    </td>
+                    <td>{{ bid.bid.delivery_date }}</td>
+                    <td>{{ bid.bid.shipping_date }}</td>
+                    <td>{{ bid.bid.pub_date }}</td>
+                    <td>
+                        {% if bid.status %}
+                            {% else %}
+
+                        <a class="uk-button uk-button-primary" href="{% url "upload-sale-update" bid.id %}">
+                            Загрузка?
+                        </a>
+                         {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                Нет данных
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "base/paginator-list.html" with page=object_list %}
+
+{% endblock %}

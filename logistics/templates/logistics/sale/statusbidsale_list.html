@@ -1,0 +1,168 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            {{ object|verbose_name_plural|upper }}
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+{% endblock %}
+
+{% block main-content %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            <h3>{{ object|verbose_name_plural|upper }}</h3>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+    <button class="uk-button uk-button-default uk-margin" id="excel">Скачать</button>
+    <script src="{% static "/js/jquery2.min.js" %}"></script>
+    <script src="{% static "/js/jquery.table2excel.min.js" %}"></script>
+    <script type="text/javascript">
+        $('#excel').click(function () {
+            $(document).ready(function () {
+                $("#exTable").table2excel({
+                    filename: "Employees.xls"
+                });
+            });
+
+        });
+    </script>
+    <form action="" method="GET">
+        <div class="uk-fieldset" uk-grid>
+            {% csrf_token %}
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <div class="uk-margin">
+                        <label class="uk-form-label">
+                            {{ field.label }}
+                        </label>
+                        <div class="uk-form-controls">
+
+                            {% if field.errors %}
+                                <div class="uk-alert-danger">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+        <div class="uk-margin">
+            <input class="uk-button uk-button-default" value="Отправить" type="submit">
+        </div>
+        <script>
+            flatpickr("#id_min_pub_date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                "locale": "ru",
+            });
+            flatpickr("#id_max_pub_date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                "locale": "ru",
+            });
+            flatpickr("#id_min_end_date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                "locale": "ru",
+            });
+            flatpickr("#id_max_end_date", {
+                altInput: true,
+                altFormat: "F j, Y",
+                dateFormat: "Y-m-d",
+                "locale": "ru",
+            });
+        </script>
+    </form>
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover" id="exTable">
+            <thead>
+            <tr>
+                <th class="uk-width-small">№ заявки</th>
+                <th>№ SAP</th>
+                <th>Клиент/Поставщик</th>
+                <th>Материал</th>
+                <th>Примечание</th>
+                <th>Дата открытия</th>
+                <th>Когда нужен транспорт</th>
+                <th>Статус</th>
+                <th>Файл</th>
+                <th>Заявитель</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bid in object_list %}
+                <tr>
+                    {% if bid.bid.status %}
+                        <td>
+                            {{ bid.bid.id }}
+                        </td>
+                    {% else %}
+                        {% if perms.logistics.add_worksale %}
+                            <td class="uk-table-link">
+                                <a href="{% url "work-sale-create" bid.bid_id %}">
+                                    {{ bid.bid.id }}
+                                </a>
+                            </td>
+                        {% else %}
+                            <td>
+                                {{ bid.bid.id }}
+                            </td>
+
+                        {% endif %}
+
+                    {% endif %}
+                    <td>{{ bid.bid.bid_number }}</td>
+                    <td>{{ bid.bid.client }}</td>
+                    <td>
+                        {% for cargo in bid.bid.cargo.all %}
+                            {{ cargo }}
+                        {% endfor %}
+                    </td>
+                    <td>{{ bid.bid.comment }}</td>
+                    <td>{{ bid.bid.pub_date }}</td>
+                    <td>{{ bid.bid.end_date }}</td>
+                    <td>
+                        {% if bid.status == 1 %}
+                            <span class="uk-text-success">принята</span>
+                        {% elif bid.status == 2 %}
+                            <span class="uk-text-success">на загрузке</span>
+                        {% elif bid.status == 3 %}
+                            <span class="uk-text-success">в пути</span>
+                        {% elif bid.status == 4 %}
+                            <span class="uk-text-success">закрыта</span>
+                        {% else %}
+                            <span class="uk-text-danger">не принята</span>
+                        {% endif %}
+                    </td>
+                    <td class="uk-table-link">
+                        <a href="{% get_media_prefix %}{{ bid.bid.file }}" alt="файл" target="_blank">
+                            {{ bid.bid.file }}
+                        </a>
+                    </td>
+                    <td>{{ bid.bid.created_by.first_name }} {{ bid.bid.created_by.last_name }}</td>
+                </tr>
+            {% empty %}
+                Нет данных
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "base/paginator-list.html" with page=object_list %}
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}
+    Обновление заявки
+{% endblock %}
+{% block main-content %}
+    <h3>Обновление заявки</h3>
+    <div class="uk-margin">
+    <a class="uk-button uk-button-default" href="{% url "work-sale-list" %}">Назад</a>
+    </div>
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <form method="post" class="uk-form-stacked" enctype="multipart/form-data">
+            <fieldset class="uk-fieldset">
+                {% csrf_token %}
+
+                <div class="uk-margin">
+                    <label class="uk-form-label">
+                        {{ form.way.label }}
+                    </label>
+                    <div class="uk-form-controls">
+                        {{ form.way|add_class:"uk-select" }}
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label">
+                        {{ form.price.label }}
+                    </label>
+                    <div class="uk-form-controls">
+                        {{ form.price|add_class:"uk-input" }}
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label">
+                        {{ form.delta_price.label }}
+                    </label>
+                    <div class="uk-form-controls">
+                        {{ form.delta_price|add_class:"uk-input" }}
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label">
+                        {{ form.currency.label }}
+                    </label>
+                    <div class="uk-form-controls">
+                        {{ form.currency|add_class:"uk-select" }}
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label">
+                        {{ form.num.label }}
+                    </label>
+                    <div class="uk-form-controls">
+                        {{ form.num|add_class:"uk-input" }}
+                    </div>
+                </div>
+                <div class="uk-margin">
+                    <label class="uk-form-label">
+                        {{ form.delivery_date.label }}
+                    </label>
+                    <div class="uk-form-controls">
+                        {{ form.delivery_date|add_class:"uk-input" }}
+                    </div>
+                </div>
+
+
+                <div class="uk-margin">
+                    <input class="uk-button uk-button-default" value="Отправить" type="submit">
+                </div>
+            </fieldset>
+            <script>
+                flatpickr("#id_shipping_date", {
+                    enableTime: true,
+                    altFormat: "F j, Y",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    "locale": "ru",
+                });
+            </script>
+        </form>
+
+
+        <div>
+            <h3>Форма для изменения заявки</h3>
+            <ul class="uk-list uk-list-divider">
+                <li>Укажите номер исходящего маршрута</li>
+                <li>Укажите цену услуги</li>
+                <li>Укажите валюту</li>
+                <li>Укажите транспорт</li>
+                <li>Укажите торговые термины</li>
+                <li>Укажите дни поставки</li>
+                <li>Укажите дату начала погрузки</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+
+{% extends 'base/index.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}
+    Обновление заявки - в пути
+{% endblock %}
+{% block main-content %}
+    <h3>Обновление заявки - в пути</h3>
+    <div class="uk-margin">
+    <a class="uk-button uk-button-default" href="{% url "path-purchase-list" %}">Назад</a>
+    </div>
+    <div class="uk-child-width-1-2@m" uk-grid>
+        <form method="post" class="uk-form-stacked">
+            <fieldset class="uk-fieldset">
+                {% csrf_token %}
+
+                <input type="hidden" name="status" value="True">
+                <h4 class="uk-margin-remove">Если груз отправился в путь, обновите статус зявки</h4>
+                <span class="uk-text-danger">Если нет, то не обновляйте!</span>
+                <div class="uk-margin">
+                    <input class="uk-button uk-button-default" value="Обновить" type="submit">
+                </div>
+            </fieldset>
+        </form>
+
+
+        <div>
+            <h3>Форма для обновления статуса заявки</h3>
+            <ul class="uk-list uk-list-divider">
+
+            </ul>
+        </div>
+    </div>
+{% endblock %}

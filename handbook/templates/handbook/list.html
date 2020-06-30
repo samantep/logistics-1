@@ -1,0 +1,145 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load my_tags %}
+
+{% block title %}
+{% for object in object_list %}
+        {% if forloop.first %}
+           {{ object|verbose_name_plural|upper }}
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+{% endblock %}
+
+{% block main-content %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            <h3>{{ object|verbose_name_plural|upper }}</h3>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+    <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #modal-example">
+        Добавить наименование
+    </button>
+    {% if info %}
+        <div class="uk-alert-danger" uk-alert>
+            <a class="uk-alert-close" uk-close></a>
+            <h3>Ошибка</h3>
+            <p>Не добвлено в базую. Возможно эта запись уже есть - {{ name|upper }}.</p>
+        </div>
+    {% endif %}
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Наименование</th>
+                <th>Изменить</th>
+                <th>Удалить</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in object_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ object.name }}</td>
+                    <td>
+                        <button uk-toggle="target: #update{{ object.id }}" class="uk-button uk-button-primary"
+                                type="button">
+                            <span class="uk-margin-small-right" uk-icon="pencil"></span>
+                            Изменить
+                        </button>
+                    </td>
+                    <td>
+                        <button class="uk-button uk-button-danger" uk-toggle="target: #delete{{ object.id }}"
+                                type="button">
+                            <span class="uk-margin-small-right" uk-icon="trash"></span>
+                            Удалить
+                        </button>
+                    </td>
+                </tr>
+            {% empty %}
+                <h2 class="uk-margin-medium-top">Нет данных для вывода</h2>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+ {% include "base/pagination.html" with page=object_list %}
+{% endblock %}
+
+{% block modal %}
+    <div id="modal-example" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h3 class="uk-modal-title">Дабавление в справочник</h3>
+            <form method="post">
+                {% csrf_token %}
+                <fieldset class="uk-fieldset">
+
+                    <div class="uk-margin">
+                        <input class="uk-input" name="name" type="text"
+                               placeholder="Введите наименование">
+                    </div>
+
+                    <p class="uk-text-right">
+                        <button class="uk-button uk-button-default uk-modal-close" type="button">Отмена</button>
+                        <button type="submit" class="uk-button uk-button-primary">Сохранить</button>
+                    </p>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+    {% for object in object_list %}
+        <div id="update{{ object.id }}" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <h3 class="uk-modal-title">Обновить {{ object.name }}</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <fieldset class="uk-fieldset">
+
+                        <div class="uk-margin">
+                            <input class="uk-input" name="name" type="text"
+                                   placeholder="Введите наименование" value="{{ object.name }}">
+                            <input type="hidden" name="id" value="{{ object.id }}">
+                            <input type="hidden" name="update" value="1">
+                        </div>
+
+                        <p class="uk-text-right">
+                            <button class="uk-button uk-button-default uk-modal-close" type="button">Отмена</button>
+                            <button type="submit" class="uk-button uk-button-primary">Сохранить</button>
+                        </p>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% for object in object_list %}
+        <div id="delete{{ object.id }}" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <h3 class="uk-modal-title">Удалить {{ object.name }}</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <fieldset class="uk-fieldset">
+
+                        <div class="uk-margin">
+                            <input type="hidden" name="id" value="{{ object.id }}">
+                            <input type="hidden" name="delete" value="1">
+                        </div>
+
+                        <p class="uk-text-right">
+                            <button class="uk-button uk-button-default uk-modal-close" type="button">Отмена</button>
+                            <button type="submit" class="uk-button uk-button-danger">Удалить</button>
+                        </p>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+
+
+{% endblock %}

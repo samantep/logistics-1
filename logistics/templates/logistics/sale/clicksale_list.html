@@ -1,0 +1,87 @@
+{% extends 'base/index.html' %}
+{% load static %}
+{% load my_tags %}
+
+{% block title %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            {{ object|verbose_name|upper }}
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+{% endblock %}
+
+{% block main-content %}
+    {% for object in object_list %}
+        {% if forloop.first %}
+            <h3>{{ object|verbose_name|upper }}</h3>
+        {% else %}
+        {% endif %}
+
+    {% endfor %}
+    <button class="uk-button uk-button-default uk-margin" id="excel">Скачать</button>
+    <script src="{% static "/js/jquery2.min.js" %}"></script>
+    <script src="{% static "/js/jquery.table2excel.min.js" %}"></script>
+    <script type="text/javascript">
+        $('#excel').click(function () {
+            $(document).ready(function () {
+                $("#exTable").table2excel({
+                    filename: "Employees.xls"
+                });
+            });
+
+        });
+    </script>
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-striped uk-table-hover" id="exTable">
+            <thead>
+            <tr>
+                <th class="uk-width-small">№ заявки</th>
+                <th>№ SAP</th>
+                <th>Материал</th>
+                <th>код маршрута</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for bid in object_list %}
+                {% if bid.bid.bid.status == 4 %}
+                    <tr style="background-color: greenyellow">
+                        <td>{{ bid.bid.bid.bid_id }}</td>
+                        <td>{{ bid.bid.bid.bid.bid_number }}</td>
+                        <td>
+                            {% for cargo in bid.bid.bid.bid.cargo.all %}
+                                {{ cargo }}
+                            {% endfor %}
+                        </td>
+                        <td>{{ bid.bid.way }}</td>
+                        <td>
+                            <span>закрыта</span>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                    <td class="uk-table-link"><a
+                            href="{% url "city-click-sale" bid.id %}">{{ bid.bid.bid.bid_id }}</a></td>
+                    <td>{{ bid.bid.bid.bid.bid_number }}</td>
+                    <td>
+                        {% for cargo in bid.bid.bid.bid.cargo.all %}
+                            {{ cargo }}
+                        {% endfor %}
+                    </td>
+                    <td>{{ bid.bid.way }}</td>
+                    <td>
+                        <span class="uk-text-danger">в пути</span>
+                    </td>
+                    </tr>
+                {% endif %}
+            {% empty %}
+                Нет данных
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "base/paginator-list.html" with page=object_list %}
+
+{% endblock %}
